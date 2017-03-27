@@ -58,7 +58,6 @@ public class DashboardActivity extends AppCompatActivity
 //        mServiceIntent = new Intent(this, StepService.class);
 //        mServiceIntent.setAction(StepService.ACTION_START_COUNT);
 //        startService(mServiceIntent);
-        StepService.startActionStepCount(this);
     }
 
     @Override
