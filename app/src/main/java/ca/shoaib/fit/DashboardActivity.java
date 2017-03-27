@@ -1,10 +1,6 @@
 package ca.shoaib.fit;
 
-import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -20,11 +16,9 @@ import android.view.View;
 import android.widget.TextView;
 
 public class DashboardActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
-        SensorEventListener{
+        implements NavigationView.OnNavigationItemSelectedListener{
 
-    private SensorManager mSensorManager;
-    private Sensor mSensor;
+    private Intent mServiceIntent;
     private float steps;
     private TextView stepsTextView;
 
@@ -35,9 +29,6 @@ public class DashboardActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-
         stepsTextView = (TextView) findViewById(R.id.step_count);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -45,8 +36,8 @@ public class DashboardActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                showCount();
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                startCount();
+                Snackbar.make(view, "Counting your steps...", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -63,8 +54,11 @@ public class DashboardActivity extends AppCompatActivity
 
     }
 
-    private void showCount() {
-        stepsTextView.setText("" + (int)steps);
+    private void startCount() {
+//        mServiceIntent = new Intent(this, StepService.class);
+//        mServiceIntent.setAction(StepService.ACTION_START_COUNT);
+//        startService(mServiceIntent);
+        StepService.startActionStepCount(this);
     }
 
     @Override
@@ -124,26 +118,14 @@ public class DashboardActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        steps = sensorEvent.values[0];
-        showCount();
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(this);
     }
 }

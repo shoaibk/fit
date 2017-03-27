@@ -7,6 +7,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -23,7 +24,7 @@ public class StepService extends IntentService implements SensorEventListener {
 
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_START_COUNT = "ca.shoaib.fit.action.FOO";
+    public static final String ACTION_START_COUNT = "ca.shoaib.fit.action.start_count";
 //    private static final String ACTION_BAZ = "ca.shoaib.fit.action.BAZ";
 
     // TODO: Rename parameters
@@ -32,6 +33,7 @@ public class StepService extends IntentService implements SensorEventListener {
 
     public StepService() {
         super("StepService");
+
     }
 
     /**
@@ -40,37 +42,17 @@ public class StepService extends IntentService implements SensorEventListener {
      *
      * @see IntentService
      */
-    // TODO: Customize helper method
-    public static void startActionStepCount(Context context, String param1, String param2) {
+    public static void startActionStepCount(Context context) {
         Intent intent = new Intent(context, StepService.class);
         intent.setAction(ACTION_START_COUNT);
-//        intent.putExtra(EXTRA_PARAM1, param1);
-//        intent.putExtra(EXTRA_PARAM2, param2);
         context.startService(intent);
     }
-
-    /**
-     * Starts this service to perform action Baz with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    /*public static void startActionBaz(Context context, String param1, String param2) {
-        Intent intent = new Intent(context, StepService.class);
-        intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
-        context.startService(intent);
-    }*/
 
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_START_COUNT.equals(action)) {
-//                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-//                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
                 handleActionStartCount();
             }
         }
@@ -81,13 +63,20 @@ public class StepService extends IntentService implements SensorEventListener {
      * parameters.
      */
     private void handleActionStartCount() {
+//        if(mSensorManager == null){
+            mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+            mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
+            Log.i("StepService", "Starting sensor for step counting");
+//        }
 
     }
 
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-
+        steps = sensorEvent.values[0];
+        Log.i("StepService", "" + (int)steps);
     }
 
     @Override
